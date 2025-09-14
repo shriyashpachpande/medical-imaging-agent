@@ -126,7 +126,6 @@
 
 
 
-
 import os
 import base64
 from flask import Flask, render_template, request
@@ -138,7 +137,7 @@ from markupsafe import Markup
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "dicom"}
 
-app = Flask(_name_)
+app = Flask(__name__)  # Correct __name__ usage
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -240,6 +239,3 @@ def index():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
-
