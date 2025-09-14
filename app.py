@@ -237,7 +237,9 @@ def index():
     
     return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key, uploaded_image=uploaded_image)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port)
+
+
 
