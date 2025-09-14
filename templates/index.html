@@ -1,59 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Medical Imaging Diagnosis Agent</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Enable Tailwind Typography plugin for .prose -->
     <script>
         tailwind.config = {
-          plugins: [require('@tailwindcss/typography')],
+            plugins: [require('@tailwindcss/typography')],
         }
     </script>
     <style>
-        .inputbox{
+        .inputbox {
             box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
         }
-        .nutton{
+
+        .nutton {
             box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
         }
     </style>
 </head>
-<body class="bg-[#f5f5f5] min-h-screen flex flex-col items-center p-6" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px ;">
+
+<body class="bg-[#f5f5f5] min-h-screen flex flex-col items-center p-6"
+    style="box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;">
     <div class="w-full max-w-4xl bg-[#f5f5f5] p-8 rounded shadow-lg">
-        <h1 class="text-3xl font-bold text-center mb-0 text-blue-900"">Medical Imaging Diagnosis Agent</h1>
+        <h1 class="text-3xl font-bold text-center mb-0 text-blue-900">Medical Imaging Diagnosis Agent</h1>
 
         <form method="POST" enctype="multipart/form-data" class="space-y-4">
-            <input type="hidden" name="groq_api_key" value="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"/>
-        
+            <input type="hidden" name="groq_api_key"
+                value="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" />
+
             <label class="block">
                 <span class="block mb-1 font-medium">Upload Medical Image:</span>
                 <input type="file" name="image" accept=".png,.jpg,.jpeg,.dicom" required
-                    class="inputbox p-2 rounded-md w-full mt-3 cursor-pointer"/>
+                    class="inputbox p-2 rounded-md w-full mt-3 cursor-pointer" />
                 <p class="text-sm text-gray-500 mt-1">Supported formats: PNG, JPG, JPEG, DICOM</p>
             </label>
-        
-            <button type="submit" class="nutton flex-shrink-0 px-4 py-2 rounded-xl text-black font-bold 
-            disabled:bg-[#f5f5f5] disabled:cursor-not-allowed cursor-pointer sm:px-6">
+
+            <button type="submit"
+                class="nutton flex-shrink-0 px-4 py-2 rounded-xl text-black font-bold disabled:bg-[#f5f5f5] disabled:cursor-not-allowed cursor-pointer sm:px-6">
                 Analyze Image
             </button>
+
             <hr style="height: 3px;">
-            
         </form>
-        
+
+        {% if uploaded_image %}
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold">Uploaded Image Preview:</h3>
+            <img src="{{ uploaded_image }}" alt="Uploaded Image Preview" style="max-width: 300px; height: auto; border: 1px solid #ddd; padding: 4px; border-radius: 8px;"
+
+                class="mt-3 max-w-full h-auto rounded shadow-lg" />
+        </div>
+        {% endif %}
 
         {% if error %}
-            <div class="mt-6 p-4 bg-red-100 text-red-700 rounded">
-                <strong>Error:</strong> {{ error }}
-            </div>
+        <div class="mt-6 p-4 bg-red-100 text-red-700 rounded">
+            <strong>Error:</strong> {{ error }}
+        </div>
         {% endif %}
 
         {% if result_html %}
-            <div class="mt-8 prose space-y-4 max-w-none text-justify">
-                {{ result_html|safe }}
-            </div>
+        <div class="mt-8 prose space-y-4 max-w-none text-justify">
+            {{ result_html|safe }}
+        </div>
         {% endif %}
     </div>
 </body>
+
 </html>
