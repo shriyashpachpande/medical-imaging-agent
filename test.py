@@ -11,41 +11,33 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "dicom"}
 
 # === Medical Analysis Prompt ===
 MEDICAL_QUERY = """
-You are a highly skilled medical imaging expert with extensive knowledge in radiology and diagnostic imaging. Analyze the patient's medical image and structure your response as follows:
+You are a highly skilled medical imaging expert...
 
-### 1. Image Type & Region
-- Specify imaging modality (X-ray/MRI/CT/Ultrasound/etc.)
-- Identify the patient's anatomical region and positioning
-- Comment on image quality and technical adequacy
+The uploaded image is here:  
+![Uploaded Image](data:image/jpeg;base64,{image_base64})
 
-### 2. Key Findings
-- List primary observations systematically
-- Note any abnormalities in the patient's imaging with precise descriptions
-- Include measurements and densities where relevant
-- Describe location, size, shape, and characteristics
-- Rate severity: Normal/Mild/Moderate/Severe
+Please analyze it and respond in the following structured format:
+### 1. Diagnosis
+- Identify the most likely diagnosis based on the uploaded image.
+- Provide a brief explanation of how you reached this diagnosis by observing the image.
 
-### 3. Diagnostic Assessment
-- Provide primary diagnosis with confidence level
-- List differential diagnoses in order of likelihood
-- Support each diagnosis with observed evidence from the patient's imaging
-- Note any critical or urgent findings
+### 2. Cause of the Condition
+- Explain why this condition occurs.
+- List common causes, risk factors, or underlying medical reasons contributing to this condition.
 
-### 4. Patient-Friendly Explanation
-- Explain the findings in simple, clear language that the patient can understand
-- Avoid medical jargon or provide clear definitions
-- Include visual analogies if helpful
-- Address common patient concerns related to these findings
+### 3. Treatment & Medication
+- Provide common treatment options and medical solutions for this diagnosis.
+- List commonly prescribed medicines, therapies, or procedures used to treat this condition.
 
-### 5. Research Context
-IMPORTANT: Use the DuckDuckGo search tool to:
-- Find recent medical literature about similar cases
-- Search for standard treatment protocols
-- Provide a list of relevant medical links of them too
-- Research any relevant technological advances
-- Include 2-3 key references to support your analysis
+### 4. When to Consult a Doctor
+- Advise when the patient should definitely consult a medical specialist.
+- Mention warning signs or conditions that require urgent medical attention.
 
-Format your response using clear markdown headers and bullet points. Be concise yet thorough.
+⚠️ Important: Always include this disclaimer at the end:  
+"This is an AI-generated analysis based on the image. Please consult a qualified medical professional for an accurate diagnosis and treatment plan."
+
+Format the response in clear markdown headers and concise bullet points.
+
 """
 
 def allowed_file(filename):
