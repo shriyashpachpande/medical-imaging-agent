@@ -1,4 +1,3 @@
-
 import os
 import base64
 from flask import Flask, render_template, request
@@ -17,30 +16,43 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Medical analysis prompt
+# Your medical analysis prompt
 MEDICAL_QUERY = """
-You are a highly skilled medical imaging expert with extensive knowledge in radiology and diagnostic imaging.
+You are a highly skilled medical imaging expert with extensive knowledge in radiology and diagnostic imaging. Analyze the patient's medical image and structure your response as follows:
 
-Below is the uploaded medical image in base64 format:  
-![Uploaded Image](data:image/jpeg;base64,{base64_image})
+### 1. Image Type & Region
+- Specify imaging modality (X-ray/MRI/CT/Ultrasound/etc.)
+- Identify the patient's anatomical region and positioning
+- Comment on image quality and technical adequacy
 
-Your task is to analyze this image and respond with the following structured information:
+### 2. Key Findings
+- List primary observations systematically
+- Note any abnormalities in the patient's imaging with precise descriptions
+- Include measurements and densities where relevant
+- Describe location, size, shape, and characteristics
+- Rate severity: Normal/Mild/Moderate/Severe
 
-### 1. Diagnosis
-- Identify the most likely diagnosis based on the image.
-- Explain briefly how you arrived at this diagnosis by observing the image.
+### 3. Diagnostic Assessment
+- Provide primary diagnosis with confidence level
+- List differential diagnoses in order of likelihood
+- Support each diagnosis with observed evidence from the patient's imaging
+- Note any critical or urgent findings
 
-### 2. Why This Happens
-- Explain common causes, risk factors, or medical reasons that lead to this condition.
+### 4. Patient-Friendly Explanation
+- Explain the findings in simple, clear language that the patient can understand
+- Avoid medical jargon or provide clear definitions
+- Include visual analogies if helpful
+- Address common patient concerns related to these findings
 
-### 3. Treatment & Medicines
-- Provide typical treatment options, medical solutions, and commonly prescribed medicines.
+### 5. Research Context
+IMPORTANT: Use the DuckDuckGo search tool to:
+- Find recent medical literature about similar cases
+- Search for standard treatment protocols
+- Provide a list of relevant medical links of them too
+- Research any relevant technological advances
+- Include 2-3 key references to support your analysis
 
-### 4. When to Consult a Doctor
-- List warning signs or situations when the patient should urgently consult a medical professional.
-
-⚠️ Disclaimer:  
-"This is an AI-generated analysis based on the image. Please consult a qualified medical professional for an accurate diagnosis and treatment plan."
+Format your response using clear markdown headers and bullet points. Be concise yet thorough.
 """
 
 def encode_image(image_path):
@@ -51,23 +63,22 @@ def encode_image(image_path):
 def index():
     result_html = None
     error = None
-    uploaded_image = None
     groq_api_key = ""
     
     if request.method == "POST":
         groq_api_key = request.form.get("groq_api_key", "").strip()
         if not groq_api_key:
             error = "Groq API Key is required."
-            return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key, uploaded_image=uploaded_image)
+            return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key)
 
         if "image" not in request.files:
             error = "No image file part."
-            return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key, uploaded_image=uploaded_image)
+            return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key)
         
         file = request.files["image"]
         if file.filename == "":
             error = "No selected file."
-            return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key, uploaded_image=uploaded_image)
+            return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key)
         
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
@@ -76,8 +87,6 @@ def index():
 
             try:
                 base64_image = encode_image(filepath)
-                uploaded_image = f"data:image/jpeg;base64,{base64_image}"
-                
                 client = Groq(api_key=groq_api_key)
                 
                 chat_completion = client.chat.completions.create(
@@ -85,11 +94,11 @@ def index():
                         {
                             "role": "user",
                             "content": [
-                                {"type": "text", "text": MEDICAL_QUERY.format(base64_image=base64_image)},
+                                {"type": "text", "text": MEDICAL_QUERY},
                                 {
                                     "type": "image_url",
                                     "image_url": {
-                                        "url": uploaded_image,
+                                        "url": f"data:image/jpeg;base64,{base64_image}",
                                     },
                                 },
                             ],
@@ -106,8 +115,8 @@ def index():
                 error = f"Error during analysis: {e}"
         else:
             error = "Allowed image types are png, jpg, jpeg, dicom."
-    
-    return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key, uploaded_image=uploaded_image)
+
+    return render_template("index.html", result_html=result_html, error=error, groq_api_key=groq_api_key)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
