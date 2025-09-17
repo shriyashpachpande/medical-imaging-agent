@@ -5,7 +5,7 @@ from markupsafe import Markup
 from groq import Groq
 
 # === CONFIGURATION ===
-GROQ_API_KEY = "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"  
+GROQ_API_KEY = "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"  
 IMAGE_PATH = "image.jpg" 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "dicom"}
 
